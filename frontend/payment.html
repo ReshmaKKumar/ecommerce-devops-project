@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Payment</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f3f3f3;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.payment-box{
+    background:white;
+    padding:40px;
+    width:400px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+h1{
+    margin-bottom:20px;
+    text-align:center;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#ff9900;
+    border:none;
+    border-radius:5px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#e68a00;
+}
+
+.summary-item{
+    margin-bottom:10px;
+}
+
+.total{
+    font-size:22px;
+    font-weight:bold;
+    color:green;
+    margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="payment-box">
+
+  <div id="orderSummary"
+style="
+background:#f3f3f3;
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+">
+</div>
+<input
+type="text"
+id="couponInput"
+placeholder="Enter Coupon Code">
+
+<button onclick="applyCoupon()"
+style="margin-top:10px;">
+    Apply Coupon
+</button>
+
+<p id="discountMessage"
+style="
+margin-top:10px;
+font-weight:bold;
+color:green;
+"></p>
+
+    <input type="text"
+    placeholder="Card Holder Name">
+
+    <input type="text"
+    placeholder="Card Number">
+
+    <input type="text"
+    placeholder="Expiry Date">
+
+    <input type="password"
+    placeholder="CVV">
+
+    <button onclick="payNow()">
+        Pay Now
+    </button>
+
+</div>
+
+<script>
+
+let discount = 0;
+let cart =
+JSON.parse(localStorage.getItem("cart")) || [];
+
+let summary =
+document.getElementById("orderSummary");
+
+let total = 0;
+
+cart.forEach(item => {
+
+    let price =
+    Number(item.price.replace(/[^0-9]/g,""));
+
+    total += price * item.quantity;
+
+    summary.innerHTML += `
+
+    <div class="summary-item">
+
+        <p>
+            ${item.name}
+        </p>
+
+        <p>
+            Quantity: ${item.quantity}
+        </p>
+
+        <p>
+            ${item.price}
+        </p>
+
+        <hr>
+
+    </div>
+
+    `;
+});
+
+summary.innerHTML += `
+
+<div class="total">
+
+    Total: ₹
+    <span id="totalAmount">
+        ${total.toLocaleString('en-IN')}
+    </span>
+
+</div>
+
+`;
+
+function payNow(){
+
+    let existingOrders =
+        JSON.parse(localStorage.getItem("orders")) || [];
+
+    let updatedOrders = [
+        ...existingOrders,
+        ...cart
+    ];
+
+    localStorage.setItem(
+        "orders",
+        JSON.stringify(updatedOrders)
+    );
+
+    localStorage.removeItem("cart");
+
+    alert("Payment Successful!");
+
+    window.location.href = "success.html";
+}
+ function applyCoupon(){
+
+    let code =
+    document.getElementById("couponInput")
+    .value;
+
+    let totalElement =
+    document.getElementById("totalAmount");
+
+    let message =
+    document.getElementById("discountMessage");
+
+    if(code === "AMAZON10"){
+
+        discount = total * 0.10;
+
+        let finalAmount =
+        total - discount;
+
+        totalElement.innerText =
+        finalAmount.toLocaleString('en-IN');
+
+        message.innerText =
+        "10% Discount Applied!";
+
+    }
+
+    else if(code === "SAVE20"){
+
+        discount = total * 0.20;
+
+        let finalAmount =
+        total - discount;
+
+        totalElement.innerText =
+        finalAmount.toLocaleString('en-IN');
+
+        message.innerText =
+        "20% Discount Applied!";
+
+    }
+
+    else{
+
+        message.innerText =
+        "Invalid Coupon Code";
+    }
+} 
+</script>
+
+</body>
+</html>

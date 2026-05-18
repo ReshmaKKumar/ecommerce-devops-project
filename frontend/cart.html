@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Cart</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f3f3;
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .cart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .item h3 {
+            margin-bottom: 5px;
+        }
+
+        .total {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        button {
+            margin-top: 10px;
+            background: #ff9900;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #e68a00;
+        }
+
+        /* Specific style for the remove button */
+        .remove-btn {
+            background: #ff4d4d;
+            color: white;
+            margin-top: 0; 
+        }
+
+        .remove-btn:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Shopping Cart</h1>
+
+    <!-- Dynamic Cart Container -->
+    <div class="cart-container" id="cart-container">
+        <!-- JavaScript will inject items here -->
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let container = document.getElementById("cart-container");
+
+        function renderCart() {
+            container.innerHTML = "";
+            let total = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = "<h2>Cart is Empty</h2>";
+                return;
+            }
+
+            cart.forEach((item, index) => {
+                // Ensure quantity exists (defaults to 1 if it wasn't added previously)
+                let qty = item.quantity || 1; 
+
+                // Ensure price is treated as a string, then strip non-numeric characters to calculate total
+                let priceValue = parseInt(item.price.toString().replace(/[^0-9]/g, ""));
+                if (!isNaN(priceValue)) {
+                    total += (priceValue * qty);
+                }
+
+                container.innerHTML += `
+                <div class="item">
+                    <div style="display:flex;gap:15px;align-items:center;">
+                        <img src="${item.image}" style="width:100px;height:100px;object-fit:contain;" alt="${item.name}">
+                        <div>
+                            <h3>${item.name}</h3>
+                            <p>${item.price}</p>
+                            <p>Quantity: ${qty}</p>
+                            <div style="display:flex;gap:10px;">
+                                <button onclick="increaseQty(${index})">+</button>
+                                <button onclick="decreaseQty(${index})">-</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="remove-btn" onclick="removeItem(${index})">
+                        Remove
+                    </button>
+                </div>
+                `;
+            });
+
+            container.innerHTML += `
+            <div class="total">
+                Total: ₹${total.toLocaleString('en-IN')}
+            </div>
+            <button onclick="checkout()">
+                Proceed to Checkout
+            </button>
+            `;
+        }
+
+        function increaseQty(index) {
+            cart[index].quantity = (cart[index].quantity || 1) + 1;
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCart();
+        }
+
+        function decreaseQty(index) {
+            if (cart[index].quantity > 1) {
+                cart[index].quantity -= 1;
+            } else {
+                // If it hits 0, completely remove the item from the cart
+                cart.splice(index, 1);
+            }
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCart();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCart();
+        }
+
+       function checkout(){
+
+    let cart =
+        JSON.parse(localStorage.getItem("cart")) || [];
+
+    let existingOrders =
+        JSON.parse(localStorage.getItem("orders")) || [];
+
+    let updatedOrders = [
+        ...existingOrders,
+        ...cart
+    ];
+
+    localStorage.setItem(
+        "orders",
+        JSON.stringify(updatedOrders)
+    );
+
+    localStorage.removeItem("cart");
+
+    window.location.href = "payment.html";
+}
+
+        // Initialize cart display on page load
+        renderCart();
+    </script>
+
+</body>
+</html>

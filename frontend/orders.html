@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f3f3;
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>My Orders</h1>
+
+    <div class="container" id="orders-container">
+        <!-- Orders will be injected here -->
+    </div>
+
+    <script>
+        let orders = JSON.parse(localStorage.getItem("orders")) || [];
+        let container = document.getElementById("orders-container");
+
+
+        function getRandomStatus(){
+
+    let statuses = [
+
+        "Ordered 📦",
+
+        "Shipped 🚚",
+
+        "Out for Delivery 🛵",
+
+        "Delivered ✅"
+    ];
+
+    return statuses[
+        Math.floor(Math.random() * statuses.length)
+    ];
+}
+        if (orders.length === 0) {
+            container.innerHTML = "<h2>No Orders Yet</h2>";
+        } else {
+            orders.forEach(item => {
+                // Default quantity to 1 if it doesn't exist
+                if (!item.quantity) {
+                    item.quantity = 1;
+                }
+
+                // Correctly append the HTML template to the container
+                container.innerHTML += `
+                <div class="card">
+                    <img src="${item.image}" alt="${item.name}">
+                    <h3>${item.name}</h3>
+                    <p>${item.price}</p>
+                    <p>
+                        Quantity Ordered:
+                        <b>${item.quantity}</b>
+                    </p>
+                    <p style="color:green;font-weight:bold;">
+
+    ${getRandomStatus()}
+
+</p>
+                </div>
+                `;
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Wishlist</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f3f3f3;
+    padding:30px;
+}
+
+.container{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
+}
+
+.card img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+}
+
+button{
+    background:red;
+    color:white;
+    border:none;
+    padding:10px;
+    margin-top:10px;
+    cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>My Wishlist ❤️</h1>
+
+<div class="container" id="wishlist-container">
+
+</div>
+
+<script>
+
+let wishlist =
+JSON.parse(localStorage.getItem("wishlist")) || [];
+
+let container =
+document.getElementById("wishlist-container");
+
+function renderWishlist(){
+
+    container.innerHTML = "";
+
+    if(wishlist.length === 0){
+
+        container.innerHTML =
+        "<h2>No wishlist items</h2>";
+
+        return;
+    }
+
+    wishlist.forEach((item,index)=>{
+
+        container.innerHTML += `
+
+        <div class="card">
+
+            <img src="${item.image}">
+
+            <h3>${item.name}</h3>
+
+            <p>${item.price}</p>
+
+            <button onclick="removeWishlist(${index})">
+                Remove
+            </button>
+
+        </div>
+
+        `;
+    });
+}
+
+function removeWishlist(index){
+
+    wishlist.splice(index,1);
+
+    localStorage.setItem(
+        "wishlist",
+        JSON.stringify(wishlist)
+    );
+
+    renderWishlist();
+}
+
+renderWishlist();
+
+</script>
+
+</body>
+</html>
