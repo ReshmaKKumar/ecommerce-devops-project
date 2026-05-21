@@ -382,11 +382,9 @@
         renderNavbar();
 
 
-        <span style="color:red;">
-NEW
-</span>
+       
 
-        /* Add to Cart */
+                /* Add to Cart */
         function addToCart(productName, productPrice, productImage) {
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
             let existingProduct = cart.find(item => item.name === productName);
